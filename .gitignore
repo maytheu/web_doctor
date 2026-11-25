@@ -5,3 +5,7 @@ coverage/
 Thumbs.db
 .qoder/
 .rederive/
+
+# Local video production scratch; the published cut lives in media/
+brag-output-*/
+submission-video-*/

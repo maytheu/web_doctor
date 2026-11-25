@@ -4,6 +4,8 @@ Conformance auditor and trust surface for Open Agentic Web sites. Given a site b
 
 The Open Agentic Web MVP profile defines how sites publish agent manifests, networks, and link maps, but ships no official validator. Agentic Web Doctor turns that profile into executable checks with stable IDs and fix hints, so publishers can verify conformance before a runtime fails and reviewers can inspect a peer before loading its instructions.
 
+**Live:** [agentic-web-doctor.onrender.com](https://agentic-web-doctor.onrender.com/) · demo peer [agentic-web-doctor-peer.onrender.com](https://agentic-web-doctor-peer.onrender.com/) · **[96-second narrated walkthrough](media/demo.mp4)**
+
 Structural conformance only — a passing report is not a security certification.
 
 ## Quick start
