@@ -6,7 +6,10 @@
       "front_man": "audit_concierge",
       "hocon": "./networks/doctor_audit_assistant.network.json",
       "description": "Audit an Open Agentic Web site and explain how to fix conformance failures.",
-      "tags": ["infrastructure", "conformance"],
+      "tags": [
+        "infrastructure",
+        "conformance"
+      ],
       "sample_queries": [
         "Is littleoven.example conformant?",
         "Why is my manifest not readable by peers?"
@@ -17,16 +20,24 @@
     "base_url": "https://api.otari.ai/api/v1",
     "byok_router": "https://api.otari.ai/api/v1"
   },
-  "allowed_peers": ["http://127.0.0.1:8788"],
+  "allowed_peers": [
+    "https://agentic-web-doctor-peer.onrender.com",
+    "http://127.0.0.1:8788"
+  ],
   "peer_policy": {
     "mode": "closed",
     "deny_origins": [],
-    "note": "The bundled demo peer is pre-approved for local demos. Replace it with your deployed peer origin."
+    "note": "The bundled demo peer (https://agentic-web-doctor-peer.onrender.com) and the local fixture are pre-approved."
   },
   "actions": {
     "version": 1,
     "module": "./actions/doctor-actions.js",
-    "agentTools": ["run_audit", "get_last_report", "explain_check", "propose_badge"]
+    "agentTools": [
+      "run_audit",
+      "get_last_report",
+      "explain_check",
+      "propose_badge"
+    ]
   },
   "linking": {
     "protocol": "nsdeploy-link/v1",
@@ -34,11 +45,16 @@
       {
         "network": "doctor_audit_assistant",
         "front_man": "audit_concierge",
-        "aliases": ["doctor", "audit_concierge"],
+        "aliases": [
+          "doctor",
+          "audit_concierge"
+        ],
         "url": "doctor_audit_assistant"
       }
     ],
     "imports": [],
-    "link_updates": { "mode": "browser-local" }
+    "link_updates": {
+      "mode": "browser-local"
+    }
   }
 }
