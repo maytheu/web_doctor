@@ -232,7 +232,11 @@ test('report UI e2e: theme, form, banner, filters, copy/download, badge, ledger'
     });
 
     await t.test('the page is keyboard-operable and announces results', async () => {
+      await browser.navigate(`${doctorBase}/`);
+      await browser.evaluate(installInterceptors);
+      await browser.send('Page.bringToFront');
       await browser.evaluate('document.getElementById("url-input").focus()');
+      assert.equal(await browser.evaluate('document.activeElement.id'), 'url-input');
       await pressTab();
       assert.equal(await browser.evaluate('document.activeElement.id'), 'run-button');
       assert.equal(await browser.evaluate('document.activeElement.matches(":focus-visible")'), true);
