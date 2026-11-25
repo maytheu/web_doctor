@@ -1,0 +1,25 @@
+{
+  "brand": "Little Oven",
+  "networks": [
+    {
+      "name": "littleoven_agents",
+      "front_man": "front_desk",
+      "hocon": "./assistant.network.json",
+      "description": "Front desk, menu and orders specialists for Little Oven.",
+      "tags": [
+        "bakery",
+        "orders"
+      ]
+    }
+  ],
+  "llm_router": {
+    "base_url": "https://api.otari.ai/api/v1"
+  },
+  "allowed_peers": [
+    "https://peer.example"
+  ],
+  "peer_policy": {
+    "mode": "closed",
+    "deny_origins": []
+  }
+}

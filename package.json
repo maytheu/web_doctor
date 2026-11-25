@@ -1,0 +1,21 @@
+{
+  "name": "agentic-web-doctor",
+  "version": "0.1.0",
+  "description": "Conformance auditor and trust surface for Open Agentic Web sites",
+  "type": "module",
+  "bin": {
+    "agentic-web-doctor": "./bin/doctor.mjs"
+  },
+  "scripts": {
+    "test": "node scripts/run-tests.mjs unit",
+    "test:browser": "node scripts/run-tests.mjs browser",
+    "test:all": "npm test && npm run test:browser",
+    "start": "node server.mjs",
+    "demo:peer": "node scripts/serve-fixture.mjs fixtures/demo-peer --port 8788",
+    "simulate:peer": "node scripts/simulate-peer.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agentic Web Doctor</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site-header">
+        <div>
+          <h1>Agentic Web Doctor</h1>
+          <p class="pitch">Audit any Open Agentic Web site before your agent loads it.</p>
+        </div>
+        <button id="theme-toggle" class="secondary" type="button" aria-pressed="false">Light theme</button>
+      </header>
+
+      <main>
+        <section class="card hero" aria-labelledby="audit-heading">
+          <h2 id="audit-heading" class="visually-hidden">Run an audit</h2>
+          <form id="audit-form">
+            <label for="url-input">Site URL</label>
+            <div class="form-row">
+              <input
+                id="url-input"
+                name="url"
+                type="text"
+                inputmode="url"
+                placeholder="example.com"
+                autocomplete="url"
+                aria-describedby="url-hint"
+                spellcheck="false"
+                autocapitalize="off"
+                required
+              />
+              <button id="run-button" type="submit">Run audit</button>
+            </div>
+          </form>
+          <p id="url-hint" class="hint">The scheme is optional: example.com uses https, while loopback hosts (localhost, 127.0.0.1) use http.</p>
+          <p class="note">The audit contacts the target site from this server. Results describe structural conformance, not security.</p>
+          <p class="note">A live SVG badge is generated with every report so you can embed it on your own site.</p>
+          <div id="confirm-region" class="confirm-row" hidden>
+            <p id="confirm-text" class="note"></p>
+            <div class="status-actions">
+              <button id="confirm-run" type="button">Contact origin</button>
+              <button id="confirm-cancel" type="button" class="secondary">Cancel</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="agent-grid">
+          <section class="card agent-card" aria-labelledby="agent-heading">
+            <div id="agent-panel"></div>
+          </section>
+          <aside class="card receipt-card" aria-labelledby="receipt-heading">
+            <h2 id="receipt-heading">Privacy receipt</h2>
+            <ul id="receipt-list" class="receipt-list"></ul>
+            <p id="receipt-note" class="note">Waiting for the runtime.</p>
+          </aside>
+        </div>
+
+        <section id="error-region" class="card error-card" hidden role="alert">
+          <h2>Audit failed</h2>
+          <p id="error-message"></p>
+        </section>
+
+        <section id="status-region" aria-live="polite">
+          <div id="results" hidden>
+            <div id="status-banner" class="card status-banner">
+              <div class="status-line">
+                <span id="status-text" class="status-value"></span>
+                <span id="score-text" class="score"></span>
+              </div>
+              <div class="status-meta">
+                <span id="counts-text"></span>
+                <span id="duration-text"></span>
+                <span id="ledger-text" class="ledger-note" hidden></span>
+                <button id="ledger-reset" type="button" class="secondary" hidden>Reset history</button>
+              </div>
+              <div class="status-actions">
+                <button id="copy-json" type="button" class="secondary">Copy JSON</button>
+                <button id="download-json" type="button" class="secondary">Download JSON</button>
+              </div>
+            </div>
+
+            <nav id="filters" class="filters" aria-label="Filter checks">
+              <button type="button" data-filter="all" aria-pressed="true">All</button>
+              <button type="button" data-filter="error" aria-pressed="false">Errors</button>
+              <button type="button" data-filter="warn" aria-pressed="false">Warnings</button>
+              <button type="button" data-filter="pass" aria-pressed="false">Passes</button>
+            </nav>
+
+            <div id="check-groups"></div>
+          </div>
+        </section>
+
+        <section id="badge-section" class="card badge-card" hidden>
+          <h2>Badge</h2>
+          <img id="badge-preview" alt="Conformance badge preview" width="220" height="20" />
+          <div class="snippet">
+            <h3>Markdown</h3>
+            <div class="snippet-row">
+              <code id="badge-markdown"></code>
+              <button type="button" class="secondary" data-copy-target="badge-markdown">Copy</button>
+            </div>
+          </div>
+          <div class="snippet">
+            <h3>HTML</h3>
+            <div class="snippet-row">
+              <code id="badge-html"></code>
+              <button type="button" class="secondary" data-copy-target="badge-html">Copy</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="recent-section" class="card" hidden>
+          <h2>Recent audits</h2>
+          <ul id="recent-list" class="recent-list"></ul>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <p>Structural conformance, not a security certification. No analytics, no telemetry.</p>
+      </footer>
+    </div>
+    <script type="module" src="/app.js"></script>
+    <script type="module" src="/site.js"></script>
+  </body>
+</html>

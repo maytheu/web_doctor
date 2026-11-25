@@ -1,0 +1,20 @@
+{
+  "brand": "Demo Peer",
+  "networks": [
+    {
+      "name": "demo_peer_agents",
+      "front_man": "peer_greeter",
+      "hocon": "./demo.network.json",
+      "description": "A two-agent demonstration network loaded from a second origin.",
+      "tags": ["demo", "peer"]
+    }
+  ],
+  "llm_router": {
+    "base_url": "https://api.otari.ai/api/v1"
+  },
+  "allowed_peers": [],
+  "peer_policy": {
+    "mode": "closed",
+    "deny_origins": []
+  }
+}

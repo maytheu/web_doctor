@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "networks": {
+    "doctor_audit_assistant": {
+      "demo_peer": "http://127.0.0.1:8788/demo.network.json"
+    }
+  }
+}

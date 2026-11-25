@@ -1,0 +1,67 @@
+name: Agentic Web Doctor
+description: Audit an Open Agentic Web site and fail on conformance errors.
+branding:
+  icon: check-circle
+  color: green
+inputs:
+  url:
+    description: Absolute http(s) URL of the site to audit.
+    required: true
+  fail-on:
+    description: Fail the step on "warn" or "error".
+    required: false
+    default: error
+  timeout:
+    description: Per-request timeout in milliseconds.
+    required: false
+    default: "8000"
+  allow-private:
+    description: Allow loopback and private addresses. Use only for local development.
+    required: false
+    default: "false"
+  report-path:
+    description: Where to write the JSON report. Defaults to a file under RUNNER_TEMP.
+    required: false
+    default: ""
+outputs:
+  status:
+    description: conformant, warnings, non-conformant, or unknown.
+    value: ${{ steps.audit.outputs.status }}
+  score:
+    description: Score from 0 to 100.
+    value: ${{ steps.audit.outputs.score }}
+  errors:
+    description: Number of error checks.
+    value: ${{ steps.audit.outputs.errors }}
+  warnings:
+    description: Number of warning checks.
+    value: ${{ steps.audit.outputs.warnings }}
+  report:
+    description: Path to the JSON report.
+    value: ${{ steps.audit.outputs.report }}
+  exit-code:
+    description: Exit code from the CLI.
+    value: ${{ steps.audit.outputs.exit-code }}
+runs:
+  using: composite
+  steps:
+    - id: audit
+      shell: bash
+      env:
+        INPUT_URL: ${{ inputs.url }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_TIMEOUT: ${{ inputs.timeout }}
+        INPUT_ALLOW_PRIVATE: ${{ inputs.allow-private }}
+        INPUT_REPORT_PATH: ${{ inputs.report-path }}
+      run: |
+        node -e "const major = Number(process.versions.node.split('.')[0]); if (major < 22) { console.error('Agentic Web Doctor requires Node.js 22 or newer; found ' + process.version); process.exit(1); }"
+        REPORT_PATH="${INPUT_REPORT_PATH:-$RUNNER_TEMP/agentic-web-doctor-report.json}"
+        ARGS=("$INPUT_URL" --fail-on "$INPUT_FAIL_ON" --timeout "$INPUT_TIMEOUT" --report "$REPORT_PATH")
+        if [ "$INPUT_ALLOW_PRIVATE" = "true" ]; then
+          ARGS+=(--allow-private)
+        fi
+        set +e
+        node "$GITHUB_ACTION_PATH/bin/doctor.mjs" "${ARGS[@]}"
+        code=$?
+        node "$GITHUB_ACTION_PATH/scripts/action-output.mjs" "$REPORT_PATH" "$code"
+        exit "$code"
