@@ -97,7 +97,7 @@ function sendNotFound(res) {
   res.end('Not found');
 }
 
-export function createServer({ allowPrivate = false, audit = auditSite, limits = {}, trustProxy = 0 } = {}) {
+export function createServer({ allowPrivate = false, audit = auditSite, limits = {}, trustProxy = 0, publicDir = PUBLIC_DIR } = {}) {
   const trustedProxyHops = Number.isInteger(trustProxy) && trustProxy > 0 ? trustProxy : 0;
   const auditLimiter = createLimiter(limits.audit ?? 30, 60 * 60 * 1000);
   const badgeLimiter = createLimiter(limits.badge ?? 120, 60 * 60 * 1000);
@@ -158,8 +158,8 @@ export function createServer({ allowPrivate = false, audit = auditSite, limits =
   async function handleStatic(res, pathname) {
     if (pathname.includes('\0') || pathname.includes('\\') || pathname.includes(':')) return sendNotFound(res);
     const relative = pathname === '/' ? '/index.html' : pathname;
-    const filePath = path.resolve(PUBLIC_DIR, '.' + relative);
-    if (filePath !== PUBLIC_DIR && !filePath.startsWith(PUBLIC_DIR + path.sep)) return sendNotFound(res);
+    const filePath = path.resolve(publicDir, '.' + relative);
+    if (filePath !== publicDir && !filePath.startsWith(publicDir + path.sep)) return sendNotFound(res);
     try {
       const info = await stat(filePath);
       const target = info.isDirectory() ? path.join(filePath, 'index.html') : filePath;

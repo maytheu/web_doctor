@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
+import os from 'node:os';
 import path from 'node:path';
+import { cp, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createServer } from '../server.mjs';
 import { startFixtureServer } from './helpers/fixture-server.mjs';
@@ -127,7 +129,13 @@ test('browser e2e: consent, actions, peer load and receipt in a real page', { sk
   const router = await startRouter();
   const target = await startFixtureServer(path.join(FIXTURES, 'good'));
   const deniedTarget = await startFixtureServer(path.join(FIXTURES, 'warn-only'));
-  const doctor = createServer({ allowPrivate: true });
+  const publicDir = await mkdtemp(path.join(os.tmpdir(), 'awd-public-'));
+  await cp(path.join(ROOT, 'public'), publicDir, { recursive: true });
+  const linksPath = path.join(publicDir, 'links.json');
+  const links = JSON.parse(await readFile(linksPath, 'utf8'));
+  links.networks.doctor_audit_assistant.demo_peer = `${PEER_ORIGIN}/demo.network.json`;
+  await writeFile(linksPath, JSON.stringify(links, null, 2));
+  const doctor = createServer({ allowPrivate: true, publicDir });
   await new Promise((resolve) => doctor.listen(0, '127.0.0.1', resolve));
   const doctorBase = `http://127.0.0.1:${doctor.address().port}`;
 
@@ -307,7 +315,7 @@ test('browser e2e: consent, actions, peer load and receipt in a real page', { sk
 
     await t.test(
       'loads the demo peer after consent without forwarding the key',
-      { skip: peer ? false : 'port 8788 is in use; the demo peer origin is fixed by the published manifest' },
+      { skip: peer ? false : 'port 8788 is in use; the e2e pins the demo peer to the local fixture' },
       async () => {
         router.setHandler((body) => {
           if (isPeerPrompt(body)) return reply('Peer answer.');
@@ -358,5 +366,6 @@ test('browser e2e: consent, actions, peer load and receipt in a real page', { sk
     await deniedTarget.close();
     if (peer) await peer.close();
     await router.close();
+    await rm(publicDir, { recursive: true, force: true });
   }
 });
