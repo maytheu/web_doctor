@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { fetchText, isPrivateIp } from '../src/fetch.mjs';
+import { fetchText, isPrivateIp, requestOnce } from '../src/fetch.mjs';
 import { startFixtureServer } from './helpers/fixture-server.mjs';
 
 const FIXTURES = fileURLToPath(new URL('../fixtures', import.meta.url));
@@ -64,6 +64,23 @@ test('rejects embedded credentials', async () => {
 
 test('rejects non-standard ports by default', async () => {
   await assert.rejects(() => fetchText('http://127.0.0.1:3000/'), /Blocked port/);
+});
+
+test('pinned lookup satisfies the autoSelectFamily callback shape', async () => {
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { 'content-type': 'text/plain' });
+    res.end('ok');
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const url = new URL(`http://localhost:${server.address().port}/`);
+    const response = await requestOnce(url, { address: '127.0.0.1', family: 4 }, 2000, 1024);
+    assert.equal(response.status, 200);
+    assert.equal(response.text, 'ok');
+  } finally {
+    server.closeAllConnections();
+    await new Promise((resolve) => server.close(resolve));
+  }
 });
 
 test('accepts loopback when allowPrivate is true', async () => {

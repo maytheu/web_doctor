@@ -152,14 +152,14 @@ async function resolveAllowed(url, allowPrivate) {
   for (const record of records) {
     if (isPrivateIp(record.address)) throw new Error(`Blocked private address for host: ${host}`);
   }
-  return records[0];
+  return records.find((record) => record.family === 4) ?? records[0];
 }
 
 function sha256(buffer) {
   return createHash('sha256').update(buffer).digest('hex');
 }
 
-function requestOnce(url, pinned, timeoutMs, maxBytes, deadline = null) {
+export function requestOnce(url, pinned, timeoutMs, maxBytes, deadline = null) {
   return new Promise((resolve, reject) => {
     const client = url.protocol === 'https:' ? https : http;
     const options = {
@@ -173,7 +173,13 @@ function requestOnce(url, pinned, timeoutMs, maxBytes, deadline = null) {
       }
     };
     if (pinned) {
-      options.lookup = (hostname, lookupOptions, callback) => callback(null, pinned.address, pinned.family);
+      options.lookup = (hostname, lookupOptions, callback) => {
+        if (lookupOptions && lookupOptions.all) {
+          callback(null, [{ address: pinned.address, family: pinned.family }]);
+        } else {
+          callback(null, pinned.address, pinned.family);
+        }
+      };
     }
     let settled = false;
     let timer = null;
