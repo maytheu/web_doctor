@@ -90,7 +90,7 @@ Severity is fixed per check; `status` is the outcome (`pass`, `warn`, `error`, `
 | `network.tools` | network | error | Network declares a non-empty `tools` array |
 | `network.duplicates` | network | error | Agent names are unique and non-empty |
 | `network.front_man` | network | error | Manifest `front_man` matches exactly one agent |
-| `network.agent.fields` | network | error | Each agent has `function.description` and `tools`; `instructions` (at most 20,000 characters) and `parameters` well formed when present |
+| `network.agent.fields` | network | error/warn | Each agent has `function.description`; omitted `tools` is a warning (defaults to none); `instructions` (at most 20,000 characters) and `parameters` well formed when present |
 | `network.descriptions` | network | warn | Descriptions are at least 20 characters |
 | `network.refs` | network | error | Every string tool is a local agent or absolute http(s) URL; descriptor objects have a string `url` |
 | `network.budget` | execution | warn | Network declares `max_execution_seconds` |
@@ -204,6 +204,29 @@ Router settings live in `localStorage` under an origin-namespaced key (`awd.byok
 4. Fetch the peer manifest and network with CORS checks, then run the peer front man through the caller's router with the BYOK key attached only to the router request.
 
 The returned receipt records `keySentToPeer`, `slyDataForwarded`, contacted origins, the consent decision, and peer artifact hashes. `assertPrivacyReceipt()` rejects receipts that leak the key, forward private context, omit the key from the router call, or embed the key. `npm run simulate:peer` runs the full flow against the demo-peer fixture and a mock router; use `npm run simulate:peer -- --deny` to demonstrate a denied consent.
+
+## Deployment
+
+GitHub hosts the source. The audit API, badge, and same-origin site actions need a running Node process, so GitHub Pages alone cannot serve a working deployment.
+
+`render.yaml` defines two services:
+
+- `agentic-web-doctor` — Node web service, start `node server.mjs --port $PORT --trust-proxy 1`, health check `/api/health`.
+- `agentic-web-doctor-peer` — static `fixtures/demo-peer` with `Access-Control-Allow-Origin: *` for the peer-load demo.
+
+1. Push the repository, then create a Render Blueprint from it.
+2. If Render renames either service, copy the peer's public origin and run:
+   `node scripts/set-peer-origin.mjs https://<peer-host>`
+3. Commit the updated `public/agent-manifest.json` and `public/links.json`, then redeploy.
+4. Verify:
+
+```bash
+curl https://<app>/api/health
+node bin/doctor.mjs https://<app>; echo "exit=$?"
+curl -I https://<app>/agent-manifest.json   # Access-Control-Allow-Origin: *
+```
+
+Never pass `--allow-private` on a public deployment. `--trust-proxy 1` is correct for one platform proxy hop; raise it only if you add another proxy. The demo peer fixture also ships a `_headers` file, so Netlify or Cloudflare Pages can host it instead of the static Render service.
 
 ## Security notes
 

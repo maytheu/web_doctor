@@ -259,7 +259,7 @@ Scoring: `score = max(0, 100 - 15*errors - 4*warnings)`. Status: `non-conformant
 | `network.tools` | network | error | `tools` non-empty array | 2.1 |
 | `network.duplicates` | network | error | Agent names unique and non-empty | 2.1 |
 | `network.front_man` | network | error | Manifest `front_man` matches exactly one agent | 2.1, 3.2 |
-| `network.agent.fields` | network | error | `function.description`; `tools` array; string instructions (≤ 20,000 chars) when present; parameters object when present | 2.1 |
+| `network.agent.fields` | network | error/warn | `function.description` required; omitted `tools` is a warning and defaults to none; string instructions (≤ 20,000 chars) when present; parameters object when present | 2.1 |
 | `network.descriptions` | network | warn | Descriptions >= 20 characters | 2.1 |
 | `network.refs` | network | error | Every string tool resolves locally or is an absolute peer URL; every object has string `url` | 2.1, 2.2 |
 | `network.budget` | execution | warn | `max_execution_seconds` present | 3.1 |

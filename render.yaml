@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: agentic-web-doctor
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.mjs --port $PORT --trust-proxy 1
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+
+  - type: web
+    name: agentic-web-doctor-peer
+    runtime: static
+    staticPublishPath: ./fixtures/demo-peer
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff

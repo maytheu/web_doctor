@@ -271,6 +271,7 @@ export function runChecks(ctx) {
     add('network.agent.fields', 'skip', 'Skipped because no network artifacts were collected');
   } else {
     const issues = [];
+    const missingTools = [];
     networks.forEach((network, index) => {
       agentsOf(network).forEach((agent, agentIndex) => {
         const label = `${nameOf(network, index)} agent[${agentIndex}]`;
@@ -281,7 +282,7 @@ export function runChecks(ctx) {
         if (typeof agent.function?.description !== 'string' || !agent.function.description.trim()) {
           issues.push(`${label}: missing function.description`);
         }
-        if (!Array.isArray(agent.tools)) issues.push(`${label}: missing tools array`);
+        if (!Array.isArray(agent.tools)) missingTools.push(`${label}: missing tools array, defaulting to none`);
         if ('instructions' in agent && typeof agent.instructions !== 'string') {
           issues.push(`${label}: instructions must be a string`);
         }
@@ -296,8 +297,15 @@ export function runChecks(ctx) {
         }
       });
     });
-    if (issues.length) add('network.agent.fields', 'error', 'One or more agents have invalid fields', { details: issues });
-    else add('network.agent.fields', 'pass', 'Agent fields are well formed');
+    if (issues.length) {
+      add('network.agent.fields', 'error', 'One or more agents have invalid fields', {
+        details: missingTools.length ? [...issues, ...missingTools] : issues
+      });
+    } else if (missingTools.length) {
+      add('network.agent.fields', 'warn', 'Some agents omit the tools array', { details: missingTools });
+    } else {
+      add('network.agent.fields', 'pass', 'Agent fields are well formed');
+    }
   }
 
   if (!networksReady) {

@@ -92,7 +92,7 @@ export const CATALOG = [
     category: 'network',
     severity: 'error',
     title: 'Agent fields are well formed',
-    hint: 'Each agent needs function.description and a tools array; instructions must be a string of at most 20,000 characters when present.',
+    hint: 'Each agent needs function.description; declare tools: [] explicitly for leaf agents; instructions must be a string of at most 20,000 characters when present.',
     specRef: 'MVP 2.1'
   },
   {

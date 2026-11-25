@@ -145,6 +145,14 @@ test('instructions at the 20,000 character limit pass', () => {
   assert.equal(result(ctx, 'network.agent.fields').status, 'pass');
 });
 
+test('an omitted tools array is a warning, not an error', () => {
+  const ctx = makeCtx();
+  delete ctx.networks[0].json.tools[0].tools;
+  const check = result(ctx, 'network.agent.fields');
+  assert.equal(check.status, 'warn');
+  assert.ok(JSON.stringify(check).includes('missing tools array'));
+});
+
 test('a Google-style key in artifact text is an error', () => {
   const ctx = makeCtx({}, {}, `{"key":"AIza${'A'.repeat(20)}"}`);
   assert.equal(result(ctx, 'security.secrets').status, 'error');
