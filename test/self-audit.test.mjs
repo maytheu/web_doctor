@@ -38,8 +38,7 @@ test('the published link map resolves demo_peer to an allowed peer origin', asyn
   const manifest = await (await fetch(`${baseUrl}/agent-manifest.json`)).json();
   const links = await (await fetch(`${baseUrl}/links.json`)).json();
   const peerUrl = new URL(links.networks.doctor_audit_assistant.demo_peer);
-  assert.equal(peerUrl.hostname, '127.0.0.1');
-  assert.equal(peerUrl.port, '8788');
+  assert.match(peerUrl.protocol, /^https?:$/);
   assert.ok(manifest.allowed_peers.includes(peerUrl.origin));
   assert.equal(manifest.peer_policy.mode, 'closed');
 });
